@@ -1,0 +1,63 @@
+{% load static %}
+<nav class="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
+    <div class="container-fluid">
+      <a class="navbar-brand">
+        <img src="{% static 'info/img/University-Logo.png' %}" width="30" height="30">
+        {% if request.user.is_authenticated %}
+          {% if request.user.is_teacher %}
+            Teacher Dashboard
+          {% elif request.user.is_student%}
+            Student Dashboard
+          {% else %}
+            Admin Dashboard
+          {% endif %}
+        {% else %}
+          University
+        {% endif %}
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        
+        {% if request.user.is_authenticated %}
+            {% if request.user.is_teacher %}
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Attendance</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Marks</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Timetable</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Reports</a>
+                </li>
+            {% elif request.user.is_student %}
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Home</a>
+                </li>
+            {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'info:AdminView' %}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" target="_blank" href="/admin">Django Administration</a>
+                </li>
+            {% endif %}
+        {% else %}
+        {% endif %}
+      </ul>
+    </div>
+      {% if request.user.is_authenticated %}
+        <button class="btn btn-danger" type="button" onclick="window.location = '{% url 'account_logout' %}'">Logout</button>
+      {% else %}
+        <button class="btn btn-outline-light" type="button" onclick="window.location = '{% url 'account_login' %}'">Login</button>
+      {% endif %} 
+    </div>
+  </nav>
