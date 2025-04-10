@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect
 from django.views.generic import TemplateView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from info.models import Department
-from info.forms import DepartmentForm
+from info.models import Department, Course
+from info.forms import DepartmentForm, CourseForm
 from django.urls import reverse_lazy
 
 # Create your views here.
@@ -39,6 +39,7 @@ class ManageData(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super(ManageData, self).get_context_data(**kwargs)
         context["department_list"] = Department.objects.all()
+        context["course_list"] = Course.objects.all()
         return context
 
 # Create Department 
@@ -59,4 +60,24 @@ class UpdateDepartment(LoginRequiredMixin, UpdateView):
 class DeleteDepartment(LoginRequiredMixin, DeleteView):
     model = Department
     template_name = "info/admin/department_confirm_delete.html"
+    success_url = reverse_lazy("info:ManageData")
+
+# Create Course
+class CreateCourse(LoginRequiredMixin, CreateView):
+    model = Course 
+    form_class = CourseForm 
+    template_name = "info/admin/course_form.html"
+    success_url = reverse_lazy("info:ManageData")
+
+# Update Course
+class UpdateCourse(LoginRequiredMixin, UpdateView):
+    model = Course
+    fields = ['name', 'department', 'short_name']
+    template_name = "info/admin/course_form.html"
+    success_url = reverse_lazy("info:ManageData")
+
+# Delete Course
+class DeleteCourse(LoginRequiredMixin, DeleteView):
+    model = Course
+    template_name = "info/admin/course_confirm_delete.html"
     success_url = reverse_lazy("info:ManageData")

@@ -10,3 +10,17 @@ class User(AbstractUser):
 class Department(models.Model):
     id = models.CharField(max_length=50, primary_key=True)
     name = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.name
+
+# Course 
+class Course(models.Model):
+    id = models.CharField(max_length=50, primary_key=True)
+    name = models.CharField(max_length=200)
+    department = models.ForeignKey(Department, on_delete=models.CASCADE)
+    short_name = models.CharField(max_length=50, default="X")
+
+    def __str__(self):
+        return self.name
+

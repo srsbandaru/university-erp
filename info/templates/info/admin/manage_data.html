@@ -5,6 +5,7 @@
 {% block content %}
     <div class="container mt-4">
         <div class="accordion" id="accordionManageData">
+            <!-- Department -->
             <div class="accordion-item">
               <h2 class="accordion-header">
                 <button class="accordion-button collapsed fs-3 fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#departments" aria-expanded="true" aria-controls="departments">
@@ -43,19 +44,52 @@
                         {% endfor %}
                     </tbody>
                   </table>
-
                 </div>
               </div>
             </div>
+            <!-- Course -->
             <div class="accordion-item">
               <h2 class="accordion-header">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                  Accordion Item #2
+                <button class="accordion-button collapsed fs-3 fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#courses" aria-expanded="false" aria-controls="courses">
+                  Courses
                 </button>
               </h2>
-              <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionManageData">
+              <div id="courses" class="accordion-collapse collapse" data-bs-parent="#accordionManageData">
                 <div class="accordion-body">
-                  <strong>This is the second item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+                  <a href="{% url 'info:CreateCourse' %}" class="btn btn-primary mb-3">Add Course</a>
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Department</th>
+                        <th scope="col">Short Name</th>
+                        <th scope="col">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        {% for course in course_list %}
+                        <tr>
+                          <td>{{course.id}}</td>
+                          <td>{{course.name}}</td>
+                          <td>{{course.department}}</td>
+                          <td>{{course.short_name}}</td>
+                          <td>
+                            <button class="btn btn-warning btn-sm" onclick="window.location = '{% url 'info:UpdateCourse' course.id %}'">Update</button>
+                            <button class="btn btn-danger btn-sm" onclick="window.location = '{% url 'info:DeleteCourse' course.id %}'">Delete</button>
+                          </td>
+                        </tr>
+                        {% empty %}
+                          <tr>
+                            <td colspan="5">
+                              <div class="alert alert-info" role="alert">
+                                No Courses found in the database
+                              </div>
+                            </td>
+                          </tr>
+                        {% endfor %}
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>

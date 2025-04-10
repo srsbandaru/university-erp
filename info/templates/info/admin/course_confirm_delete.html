@@ -1,0 +1,30 @@
+{% extends "base_master.html" %}
+{% block title %}
+    course confirm delete
+{% endblock title %}
+{% block content %}
+    <div class="container">
+        <h1>Delete Course</h1>
+        <hr>
+        <p>Are you sure you want to delete this <span class="text-danger">"{{course.name}}"</span>?</p>
+        <table class="table table-danger">
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Department</th>
+                <th>Short Name</th>
+            </tr>
+            <tr>
+                <td>{{course.id}}</td>
+                <td>{{course.name}}</td>
+                <td>{{course.department}}</td>
+                <td>{{course.short_name}}</td>
+            </tr>
+        </table>
+        <form action="" method="post">
+            {% csrf_token %}
+            <button class="btn btn-danger" type="submit" value="delete">Delete</button>
+            <button class="btn btn-primary">Cancel</button>
+        </form>
+    </div>
+{% endblock content %}

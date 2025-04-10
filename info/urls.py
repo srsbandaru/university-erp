@@ -13,4 +13,7 @@ urlpatterns = [
     path("admin_home/manage_data/department/create", views.CreateDepartment.as_view(), name = "CreateDepartment"),
     path("admin_home/manage_data/department/update/<str:pk>", views.UpdateDepartment.as_view(), name = "UpdateDepartment"),
     path("admin_home/manage_data/department/delete/<str:pk>", views.DeleteDepartment.as_view(), name = "DeleteDepartment"),
+    path("admin_home/manage_data/course/create", views.CreateCourse.as_view(), name = "CreateCourse"),
+    path("admin_home/manage_data/course/update/<str:pk>", views.UpdateCourse.as_view(), name = "UpdateCourse"),
+    path("admin_home/manage_data/course/delete/<str:pk>", views.DeleteCourse.as_view(), name = "DeleteCourse")
 ]
