@@ -1,8 +1,9 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import TemplateView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from info.models import Department, Course
-from info.forms import DepartmentForm, CourseForm
+from info.models import Department, Course, Class, Student, User
+from allauth.account.models import EmailAddress
+from info.forms import DepartmentForm, CourseForm, ClassForm, StudentForm
 from django.urls import reverse_lazy
 
 # Create your views here.
@@ -40,6 +41,8 @@ class ManageData(LoginRequiredMixin, TemplateView):
         context = super(ManageData, self).get_context_data(**kwargs)
         context["department_list"] = Department.objects.all()
         context["course_list"] = Course.objects.all()
+        context["class_list"] = Class.objects.all()
+        context["student_list"] = Student.objects.all()
         return context
 
 # Create Department 
@@ -81,3 +84,74 @@ class DeleteCourse(LoginRequiredMixin, DeleteView):
     model = Course
     template_name = "info/admin/course_confirm_delete.html"
     success_url = reverse_lazy("info:ManageData")
+
+# Create Class
+class CreateClass(LoginRequiredMixin, CreateView):
+    model = Class
+    form_class = ClassForm
+    template_name = "info/admin/class_form.html"
+    success_url = reverse_lazy("info:ManageData")
+
+class UpdateClass(LoginRequiredMixin, UpdateView):
+    model = Class
+    fields = ['department', 'section', 'semester']
+    template_name = "info/admin/class_form.html"
+    success_url = reverse_lazy("info:ManageData")
+
+class DeleteClass(LoginRequiredMixin, DeleteView):
+    model = Class
+    template_name = "info/admin/class_confirm_delete.html"
+    success_url = reverse_lazy("info:ManageData")
+
+class CreateStudent(LoginRequiredMixin, CreateView):
+    model = Student
+    form_class = StudentForm
+    template_name = "info/admin/student_form.html"
+    success_url = reverse_lazy("info:ManageData")
+
+    def post(self, request):
+        form = StudentForm(request.POST)
+        if not form.is_valid():
+            context = {"form":form}
+            return render(request, self.template_name, context)
+        
+        # Get all form data
+        form_data = request.POST
+
+        # Generate Username : first_name + underscore + last three digits of roll number
+        username = form_data["name"].split(" ")[0].lower() + "_" + form_data["roll_number"][-3:]
+        print(username)
+
+        # Generate Password : first_name + underscore + year_of_birth
+        password = form_data["name"].split(" ")[0].lower() + "_" + form_data["date_of_birth"].replace("-","")[:4]
+        print(password)
+
+        # Create a Student in User Model 
+        new_user = User.objects.create_user(username = username, password = password, email = form_data["email_address"], is_student = True) 
+
+        # Email Addresses for django allauth
+        EmailAddress.objects.create(user = new_user, email = new_user.email, primary = True, verified = False)
+
+        # Create student in student model
+        class_id = get_object_or_404(Class, id=form_data["class_id"])
+        Student.objects.create(name = form_data["name"], gender = form_data["gender"], roll_number = form_data["roll_number"], date_of_birth = form_data["date_of_birth"], class_id = class_id, user = new_user)
+
+        return redirect(self.success_url)
+        
+
+class UpdateStudent(LoginRequiredMixin, UpdateView):
+    model = Student
+    fields = ["name", "gender", "date_of_birth", "class_id"]
+    template_name = "info/admin/student_form.html"
+    success_url = reverse_lazy("info:ManageData")
+
+class DeleteStudent(LoginRequiredMixin, DeleteView):
+    model = Student
+    template_name = "info/admin/student_confirm_delete.html"
+    success_url = reverse_lazy("info:ManageData")
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        student = User.objects.get(username = self.object.user.username)
+        student.delete()
+        return redirect(self.success_url)

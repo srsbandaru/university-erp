@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import ModelForm
-from info.models import Department, Course
+from info.models import Department, Course, Class, Student
 
 class DepartmentForm(ModelForm):
     class Meta:
@@ -19,3 +19,29 @@ class CourseForm(ModelForm):
             "id":"Course ID",
             "name":"Course Name",
         }
+
+class ClassForm(ModelForm):
+    class Meta:
+        model = Class
+        fields = ['department', 'id', 'section', 'semester']
+        labels = {
+            "id":"Class ID",
+            "section":"Class Section",
+            "semester":"Class Semester"
+        }
+
+class StudentForm(ModelForm):
+    email_address = forms.EmailField()
+    class Meta:
+        model = Student
+        fields = ['roll_number', 'name', 'gender', 'date_of_birth', 'class_id']
+        labels = {
+            "roll_number":"Student Roll Number",
+            "name":"Student Full Name",
+            "date_of_birth":"Date of Birth",
+            "class_id":"Class"
+        }
+        widgets = {
+            'date_of_birth':forms.DateInput(attrs={"type":"date"})
+        }
+
